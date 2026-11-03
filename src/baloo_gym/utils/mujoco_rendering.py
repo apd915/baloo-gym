@@ -275,6 +275,10 @@ class OffScreenViewer(BaseRender):
                         seg_ids[geom.segid + 1, 1] = geom.objid
                 rgb_img = seg_ids[seg_img]
 
+            # clear overlays and markers
+            self._overlays.clear()
+            self._markers.clear()
+
             # original image is upside-down, so flip i
             return rgb_img[::-1, :, :]
 

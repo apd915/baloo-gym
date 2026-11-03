@@ -112,8 +112,11 @@ def record_rollout(env,
 
 
 def make_movie(frames: list, filename: str, fps=30):
-    os.makedirs("videos", exist_ok=True)
-    path = os.path.join("videos", filename)
+    if "/" in filename:
+        path = filename
+    else:
+        path = os.path.join("videos", filename)
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
     with imageio.get_writer(path, fps=fps, codec='libx264',
                             quality=8) as writer:
         for frame in frames:

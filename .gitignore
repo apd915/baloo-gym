@@ -79,3 +79,7 @@ pbrs_example/
 *.csv
 
 *.json
+
+*.prof
+*IfIBreak*
+

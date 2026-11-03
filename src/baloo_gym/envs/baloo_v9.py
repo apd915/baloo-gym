@@ -23,7 +23,7 @@ class BalooV9(BalooBase):
     def __init__(
         self,
         render_mode=None,
-        camera_name=None,
+        camera_name='frontcam',
         ctrl_timestep=0.01,
         render_width=320,
         render_height=240,
