@@ -2,6 +2,22 @@ import gymnasium as gym
 from abc import ABC, abstractmethod
 import mujoco
 from baloo_gym.utils.mujoco_rendering import MujocoRenderer
+
+from pathlib import Path
+
+# Load MuJoCo plugins required by the Baloo XML.
+# _PLUGIN_DIR = Path(
+#     "~/baloo-ws/baloo-mujoco-sim/plugin/build"
+# ).expanduser()
+
+# mujoco.mj_loadPluginLibrary(
+#     str(_PLUGIN_DIR / "joint_angle_estimator/libjoint_angle_estimator.so")
+# )
+
+# mujoco.mj_loadPluginLibrary(
+#     str(_PLUGIN_DIR / "ruckig_actuator/libRuckigActuator.so")
+# )
+
 import baloo_mujoco_sim as baloo_mj
 from baloo_mujoco_sim.utils.baloo_mj_api import (
     set_elevator_cmd,
@@ -206,15 +222,25 @@ class BalooBase(gym.Env, ABC):
         # change whatever you want in spec before compiling model for use during episode
         if self.randomize_object_size:
             self.object_attr = random.choice(self.object_combinations)
-            # xsize, ysize = np.random.uniform(0.2, 0.6, 2)
-            # zsize = np.random.uniform(0.5, 1.25)
+
             xsize, ysize, zsize = self.object_attr[0:3]
 
             set_box_size(self.mjspec, xsize, ysize, zsize)
+
+        elif self.object_size is not None:
+            xsize, ysize, zsize = self.object_size
+
+            set_box_size(self.mjspec, xsize, ysize, zsize)
+
         else:
-            if self.object_size is not None:
-                xsize, ysize, zsize = self.object_size
-                set_box_size(self.mjspec, xsize, ysize, zsize)
+            # Use the box dimensions already defined in the XML.
+            box_id = mujoco.mj_name2id(
+                self.model,
+                mujoco.mjtObj.mjOBJ_GEOM,
+                "box",
+            )
+            xsize, ysize, zsize = self.model.geom_size[box_id]
+
 
         if self.randomize_object_mass:
             if not self.randomize_object_size:
@@ -253,13 +279,9 @@ class BalooBase(gym.Env, ABC):
                 #default position is 0
                 x_box = 0
 
-        if self.randomize_object_size:
-            #place box on the ground, according to new size.
-            z_box = zsize / 2
-        else:
-            if self.object_size is not None:
-                xsize, ysize, zsize = self.object_size
-                z_box = zsize / 2
+        # Place the box on the ground according to its current size.
+        z_box = zsize / 2
+
 
         set_box_position(self.model, self.data, x_box, y_box, z_box)
 

@@ -117,24 +117,7 @@ class ObjectPerturbationWrapper(gym.Wrapper):
         )
 
     def render(self):
-        ret = super().render()
-
-        # box_pos = self.unwrapped.data.body('box').xipos
-        # arrow_pos = box_pos + np.array([0, 0, 1], dtype=np.float64)
-        # R = rotation_matrix_from_vector_to_vector(np.array([0,0,1]), self.force_direction)
-        # R = R.flatten()
-        #
-        # rgba = np.array([1,0,0,float(self.perturbation_enabled)], dtype=np.float64)
-
-        self.unwrapped.mujoco_renderer.viewer.add_marker(
-            type=mujoco.mjtGeom.mjGEOM_ARROW,
-            size=np.array([0.05, 0.05, 0.5], dtype=np.float32),
-            pos=np.array([1.0, 1.0, 1.0], dtype=np.float32),
-            mat=np.eye(3, dtype=np.float32),
-            rgba=np.array([1.0, 0.0, 0.0, 1.0], dtype=np.float32),
-        )
-
-        return ret
+        return super().render()
 
     # def render(self):
     #     ret = super().render()
